@@ -9,5 +9,6 @@ gem 'pg'
 gem 'sinatra-assetpack'
 gem 'shotgun'
 gem 'coffee-script'
+gem 'rest-client'
 
 

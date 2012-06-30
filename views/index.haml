@@ -6,4 +6,6 @@
   %h1 Welcome to Rdioocto!
   #apiswf
   #nobody{:style => 'display: none'} You're not logged in to Rdio.
-    
+  %a{:href => "https://github.com/login/oauth/authorize?client_id=#{ENV['GH_CLIENT_ID']}&scope=public_repo" } Hook up with github, yo
+  %br
+  %a{:href => "authentications/rdio"} Then Hook up with rdio, sir.
