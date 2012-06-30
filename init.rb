@@ -1,3 +1,4 @@
+require './env'
 require 'bundler'
 Bundler.require :default
 require 'yaml'
