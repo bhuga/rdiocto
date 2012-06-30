@@ -1,0 +1,13 @@
+production:
+  adapter: postgres
+  host: 
+  database:
+  username:
+  password:
+
+development:
+  adapter: postgresql
+  host: localhost
+  database: rdiocto-dev
+  username: root
+  password:
