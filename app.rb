@@ -6,15 +6,17 @@ require_relative 'lib/rdio'
 class Rdiocto < Sinatra::Application
   register Sinatra::AssetPack
   assets {
-    js :app, [ '/js/*.js' ]
+    js :app, [ '/js/*.js', '/js/**/*.js' ]
   }
   enable :sessions
 
   before do
-    p session
     if session[:user_id]
       @user = User.find(session[:user_id])
     end
+    rdio = session[:rdio_token].nil? ? nil : [session[:rdio_token], session[:rdio_secret]]
+    rdio ||= @user.rdio_key.nil? ? nil : [ @user.rdio_key, @user.rdio_secret ]
+    @rdio = Rdio.new([ENV['RDIO_CLIENT_ID'], ENV['RDIO_CLIENT_SECRET']], rdio) unless rdio.nil?
   end
 
   get '/' do
@@ -54,16 +56,21 @@ class Rdiocto < Sinatra::Application
   end
 
   get '/callbacks/rdio_auth' do
-    rdio = Rdio.new([ENV['RDIO_CLIENT_ID'], ENV['RDIO_CLIENT_SECRET']],
-                    [session[:rdio_token], session[:rdio_secret]])
-    rdio.complete_authentication(params['oauth_verifier'])
-    user = rdio.call('currentUser')['result']
+    @rdio.complete_authentication(params['oauth_verifier'])
+    user = JSON.parse(@rdio.call('currentUser').body)['result']
     @user.rdio_username = File.basename(user['url'])
-    @user.rdio_key = rdio.token[0]
-    @user.rdio_secret = rdio.token[1]
+    @user.rdio_key = @rdio.token[0]
+    @user.rdio_secret = @rdio.token[1]
+    session.delete :rdio_token
+    session.delete :rdio_secret
     @user.save
-    p user
-    "calllllllled back, sir!"
+    redirect '/'
+  end
+
+  get '/rdio/:method' do
+    result = @rdio.call params['method']
+    content_type :json
+    result.body
   end
 end
 

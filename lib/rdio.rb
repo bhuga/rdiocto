@@ -36,7 +36,7 @@ class Rdio
     response = signed_post('http://api.rdio.com/oauth/request_token',
                            {'oauth_callback' => callback_url})
     # parse the response
-    parsed = CGI.parse(response)
+    parsed = CGI.parse(response.body)
     # save the token
     @token = [parsed['oauth_token'][0], parsed['oauth_token_secret'][0]]
     # return an URL that the user can use to authorize this application
@@ -48,9 +48,13 @@ class Rdio
     response = signed_post('http://api.rdio.com/oauth/access_token',
                            {'oauth_verifier' => verifier})
     # parse the response
-    parsed = CGI.parse(response)
+    parsed = CGI.parse(response.body)
     # save the token
     @token = [parsed['oauth_token'][0], parsed['oauth_token_secret'][0]]
+    if @token.include? nil
+      raise "failed to authenticate: #{response.body}"
+    end
+    @token
   end
 
   def call(method, params={})
@@ -59,7 +63,7 @@ class Rdio
     # put the method in the dict
     params['method'] = method
     # call to the server and parse the response
-    return JSON.load(signed_post('http://api.rdio.com/1/', params))
+    signed_post('http://api.rdio.com/1/', params)
   end
 
   private
@@ -71,7 +75,6 @@ class Rdio
     req = Net::HTTP::Post.new(url.path, {'Authorization' => auth})
     req.set_form_data(params)
     res = http.request(req)
-    return res.body
   end
 
   def method_missing(method, *params)

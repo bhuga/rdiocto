@@ -51,16 +51,15 @@ def om(consumer, url, post_params, token=nil, method='POST', realm=nil, timestam
 
   # the method must be upper-case
   method = method.upcase
-
   # we want params as an Array of name / value pairs
   if post_params.is_a?(Array)
     params = post_params
   else
     params = post_params.collect { |x| x }
   end
-  
+
   # we want those pairs to be strings
-  params = params.collect { |k,v| [k.to_s, v.to_s]} 
+  params = params.collect { |k,v| [k.to_s, v.to_s]}
 
   # normalize the URL
   url = URI.parse(url)
@@ -98,7 +97,7 @@ def om(consumer, url, post_params, token=nil, method='POST', realm=nil, timestam
     # and the token secret in the HMAC-SHA1 key
     hmac_key += token[1]
   end
-  
+
   def percent_encode(s)
     if s.respond_to?(:encoding)
       # Ruby 1.9 knows about encodings, convert the string to UTF-8
@@ -134,7 +133,7 @@ def om(consumer, url, post_params, token=nil, method='POST', realm=nil, timestam
   signature_base_string = (percent_encode(method) +
                            '&' + percent_encode(url.to_s) +
                            '&' + percent_encode(normalized_params))
-  
+
   # HMAC-SHA1
   hmac = Digest::HMAC.new(hmac_key, Digest::SHA1)
   hmac.update(signature_base_string)
