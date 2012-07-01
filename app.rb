@@ -58,9 +58,11 @@ class Rdiocto < Sinatra::Application
   get '/callbacks/rdio_auth' do
     @rdio.complete_authentication(params['oauth_verifier'])
     user = JSON.parse(@rdio.call('currentUser').body)['result']
+    p user
     @user.rdio_username = File.basename(user['url'])
     @user.rdio_key = @rdio.token[0]
     @user.rdio_secret = @rdio.token[1]
+    @user.rdio_user_key = user['key']
     session.delete :rdio_token
     session.delete :rdio_secret
     @user.save

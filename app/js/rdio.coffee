@@ -1,5 +1,8 @@
 class @Rdio
 
+  constructor: (opts) ->
+    @user = opts.user
+
   call: (method, args ) ->
     callback = args.complete
     error_callback = args.error || console.log

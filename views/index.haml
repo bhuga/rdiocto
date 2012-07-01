@@ -2,6 +2,8 @@
 %head
   %title Rdioocto
   != js :app
+  :javascript
+    rdio = new Rdio({user: '#{@user.rdio_user_key}'})
 %body
   %h1 Welcome to Rdioocto!
   #apiswf
