@@ -3,15 +3,13 @@ class @Rdio
   constructor: (opts) ->
     @user = opts.user
 
-  call: (method, args ) ->
-    callback = args.complete
-    error_callback = args.error || console.log
-    method = args.method
-    args.method = args.error = args.callback = undefined
+  call: (method, params, opts ) ->
+    callback = opts.success
+    error_callback = opts.error || console.log
     $.ajax
       method: 'POST'
       url: "/rdio/#{method}"
-      params: args
+      data: params
       complete: (xhr) ->
         data = undefined
         try
